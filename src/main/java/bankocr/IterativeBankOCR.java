@@ -55,20 +55,20 @@ public class IterativeBankOCR implements BankOCR {
 
     private String getNumber(Number number) { return numbers.getOrDefault(number,"?"); }
 
-    private String validateAccountNumber(StringBuilder accountNumber) {
-        String[] elements = accountNumber.reverse().toString().split("");
-        accountNumber.reverse();
-        Integer checksum = calculateChecksum(elements);
+    private String validateAccountNumber(StringBuilder accountNumberBuilder) {
+        String[] accountNumber = accountNumberBuilder.reverse().toString().split("");
+        accountNumberBuilder.reverse();
+        Integer checksum = calculateChecksum(accountNumber);
         if (checksum == null) return " ILL";
         if (checksum % 11 != 0) return " ERR";
         else return "";
     }
 
-    private Integer calculateChecksum(String[] elements) {
+    private Integer calculateChecksum(String[] accountNumber) {
         int checksum = 0;
-        for (int i = 0; i < elements.length; i++) {
-            if (elements[i].equals("?")) return null;
-            checksum += (Integer.parseInt(elements[i]) * (i+1));
+        for (int i = 0; i < accountNumber.length; i++) {
+            if (accountNumber[i].equals("?")) return null;
+            checksum += Integer.parseInt(accountNumber[i]) * (i+1);
         }
         return checksum;
     }

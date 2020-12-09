@@ -3,7 +3,7 @@ package bankocr;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class FunctionalBankOCR implements BankOCR {
     Integer checksumCalculation = 1;
@@ -60,15 +60,16 @@ public class FunctionalBankOCR implements BankOCR {
 
     private String validateAccountNumber(StringBuilder accountNumberBuilder) {
         String[] accountNumber = accountNumberBuilder.reverse().toString().split("");
-        Integer checksum = calculateChecksum(accountNumber);
+        Integer checksum = calculateChecksum(Arrays.stream(accountNumber));
         if (checksum == null) return " ILL";
         if (checksum % 11 != 0) return " ERR";
         else return "";
     }
 
-    private Integer calculateChecksum(String[] stream) {
-        try (IntStream intStream = Arrays.stream(stream).mapToInt(Integer::parseInt)) {
-            return intStream.reduce(0, this::increaseChecksum);
+    private Integer calculateChecksum(Stream<String> stream) {
+        try{
+            return stream.mapToInt(Integer::parseInt)
+                    .reduce(0,this::increaseChecksum);
         } catch (NumberFormatException ex){
             return null;
         }
@@ -82,6 +83,6 @@ public class FunctionalBankOCR implements BankOCR {
 
     private void resetStatus(StringBuilder accountNumberBuilder) {
         accountNumberBuilder.reverse();
-        checksumCalculation = 0;
+        checksumCalculation = 1;
     }
 }
